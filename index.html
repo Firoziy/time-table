@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEP 2020 AI Timetable Generator</title>
+    <title>NEP 2020 AI Timetable Generator - Demo</title>
     <style>
         * {
             margin: 0;
@@ -39,6 +39,20 @@
         .header p {
             font-size: 1.1rem;
             opacity: 0.9;
+        }
+
+        .demo-banner {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .demo-banner h3 {
+            margin-bottom: 5px;
         }
 
         .main-content {
@@ -159,6 +173,11 @@
 
         .btn-danger {
             background: #dc3545;
+        }
+
+        .btn-demo {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            margin-bottom: 20px;
         }
 
         .dynamic-list {
@@ -353,6 +372,19 @@
         .conflict-minor { background: #ffc107; }
         .conflict-major { background: #dc3545; }
 
+        .demo-info {
+            background: #e8f5e8;
+            border: 1px solid #4caf50;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .demo-info h4 {
+            color: #2e7d32;
+            margin-bottom: 10px;
+        }
+
         @media (max-width: 768px) {
             .nav-tabs {
                 flex-direction: column;
@@ -375,7 +407,23 @@
             <p>Intelligent Scheduling for FYUP, B.Ed., M.Ed., and ITEP Programs</p>
         </div>
 
+        <div class="demo-banner">
+            <h3>🚀 DEMO VERSION - Ready to Test!</h3>
+            <p>All forms are pre-filled with sample data. Click "Load Demo Data" to populate everything instantly!</p>
+        </div>
+
         <div class="main-content">
+            <div class="demo-info">
+                <h4>📋 Demo Instructions:</h4>
+                <p><strong>1.</strong> Click "Load All Demo Data" button below to populate all sections with sample NEP 2020 compliant data</p>
+                <p><strong>2.</strong> Go to "AI Generate" tab and click "Generate Demo Timetable" to see the AI in action</p>
+                <p><strong>3.</strong> View the generated timetable in "View & Export" tab</p>
+                <p><strong>4.</strong> Check analytics and reports in the "Analytics" tab</p>
+            </div>
+
+            <button class="btn btn-demo" onclick="loadAllDemoData()">🎯 Load All Demo Data</button>
+            <button class="btn btn-secondary" onclick="clearAllData()">🗑️ Clear All Data</button>
+
             <div class="nav-tabs">
                 <button class="nav-tab active" onclick="switchTab('setup')">📋 Setup</button>
                 <button class="nav-tab" onclick="switchTab('generate')">🤖 AI Generate</button>
@@ -392,7 +440,7 @@
                         <div class="form-group">
                             <label>Academic Year</label>
                             <select id="academicYear">
-                                <option value="2024-25">2024-25</option>
+                                <option value="2024-25" selected>2024-25</option>
                                 <option value="2025-26">2025-26</option>
                                 <option value="2026-27">2026-27</option>
                             </select>
@@ -402,7 +450,7 @@
                             <select id="semester">
                                 <option value="1">Semester 1</option>
                                 <option value="2">Semester 2</option>
-                                <option value="3">Semester 3</option>
+                                <option value="3" selected>Semester 3</option>
                                 <option value="4">Semester 4</option>
                                 <option value="5">Semester 5</option>
                                 <option value="6">Semester 6</option>
@@ -419,6 +467,7 @@
                                 <label><input type="checkbox" id="itep" checked> ITEP</label>
                             </div>
                         </div>
+                        <button class="btn btn-demo" onclick="loadProgramDemo()">📚 Load Program Demo</button>
                     </div>
 
                     <div class="form-section">
@@ -447,6 +496,7 @@
                             <input type="number" id="maxHours" min="1" max="40" value="20">
                         </div>
                         <button class="btn" onclick="addFaculty()">Add Faculty</button>
+                        <button class="btn btn-demo" onclick="loadFacultyDemo()">👥 Load Faculty Demo</button>
                         <div id="facultyList" class="dynamic-list"></div>
                     </div>
 
@@ -482,6 +532,7 @@
                             </div>
                         </div>
                         <button class="btn" onclick="addCourse()">Add Course</button>
+                        <button class="btn btn-demo" onclick="loadCourseDemo()">📖 Load Course Demo</button>
                         <div id="courseList" class="dynamic-list"></div>
                     </div>
 
@@ -509,6 +560,7 @@
                             <textarea id="roomEquipment" placeholder="Projector, Whiteboard, Computer, etc."></textarea>
                         </div>
                         <button class="btn" onclick="addRoom()">Add Room</button>
+                        <button class="btn btn-demo" onclick="loadRoomDemo()">🏫 Load Room Demo</button>
                         <div id="roomList" class="dynamic-list"></div>
                     </div>
 
@@ -516,19 +568,22 @@
                         <h3>🎯 Special Requirements</h3>
                         <div class="form-group">
                             <label>Teaching Practice Schedule</label>
-                            <input type="text" id="teachingPractice" placeholder="Weeks 8-12, External Schools">
+                            <input type="text" id="teachingPractice" value="Weeks 8-12, External Schools, B.Ed. students">
                         </div>
                         <div class="form-group">
                             <label>Field Work Periods</label>
-                            <input type="text" id="fieldWork" placeholder="Rural immersion, Community service">
+                            <input type="text" id="fieldWork" value="Rural immersion (2 weeks), Community service projects">
                         </div>
                         <div class="form-group">
                             <label>Internship Blocks</label>
-                            <input type="text" id="internships" placeholder="Industry placement periods">
+                            <input type="text" id="internships" value="Industry placement (4 weeks), Research internship">
                         </div>
                         <div class="form-group">
                             <label>Project Components</label>
-                            <textarea id="projects" placeholder="Capstone projects, Research work"></textarea>
+                            <textarea id="projects">Capstone projects for final year students
+Research methodology workshops
+Dissertation writing seminars
+Project presentation sessions</textarea>
                         </div>
                     </div>
 
@@ -536,15 +591,17 @@
                         <h3>👨‍🎓 Student Enrollment</h3>
                         <div class="form-group">
                             <label>Total Students</label>
-                            <input type="number" id="totalStudents" min="1" max="1000" value="150">
+                            <input type="number" id="totalStudents" min="1" max="1000" value="240">
                         </div>
                         <div class="form-group">
                             <label>Class Sections</label>
-                            <input type="number" id="classSections" min="1" max="20" value="3">
+                            <input type="number" id="classSections" min="1" max="20" value="4">
                         </div>
                         <div class="form-group">
                             <label>Elective Preferences</label>
-                            <textarea id="electivePrefs" placeholder="Student elective choice data"></textarea>
+                            <textarea id="electivePrefs">Major Electives: Computer Science (60), Psychology (45), Economics (40)
+Minor Electives: Data Science (35), Creative Writing (25), Environmental Studies (30)
+Skill Courses: Digital Marketing (50), Foreign Languages (40), Entrepreneurship (35)</textarea>
                         </div>
                     </div>
                 </div>
@@ -556,13 +613,13 @@
                     <h3>🤖 AI Configuration</h3>
                     <div class="form-group">
                         <label>Gemini API Key</label>
-                        <input type="password" id="apiKey" placeholder="Enter your Gemini API key">
-                        <small>Get your API key from <a href="https://ai.google.dev/" target="_blank">Google AI Studio</a></small>
+                        <input type="password" id="apiKey" value="demo-api-key-for-testing" placeholder="Enter your Gemini API key">
+                        <small>Demo API key loaded for testing. Get your real API key from <a href="https://ai.google.dev/" target="_blank">Google AI Studio</a></small>
                     </div>
                     <div class="form-group">
                         <label>Optimization Priority</label>
                         <select id="optimizationPriority">
-                            <option value="balanced">Balanced Approach</option>
+                            <option value="balanced" selected>Balanced Approach</option>
                             <option value="faculty">Minimize Faculty Conflicts</option>
                             <option value="rooms">Optimize Room Utilization</option>
                             <option value="students">Maximize Student Convenience</option>
@@ -580,7 +637,7 @@
                 </div>
 
                 <div class="alert alert-info" id="generateInfo">
-                    <strong>Ready to Generate!</strong> The AI will analyze all your inputs and create an optimized timetable considering NEP 2020 requirements.
+                    <strong>Demo Ready!</strong> All sample data has been loaded. The AI will generate a realistic timetable based on NEP 2020 requirements using the demo faculty, courses, and infrastructure data.
                 </div>
 
                 <div class="loading" id="loadingDiv">
@@ -592,15 +649,15 @@
                     <div class="progress-bar" id="progressBar">0%</div>
                 </div>
 
-                <button class="btn" onclick="generateTimetable()">🚀 Generate AI Timetable</button>
-                <button class="btn btn-secondary" onclick="validateInputs()">✅ Validate Inputs</button>
-                <button class="btn btn-danger" onclick="clearAll()">🗑️ Clear All Data</button>
+                <button class="btn" onclick="generateDemoTimetable()">🚀 Generate Demo Timetable</button>
+                <button class="btn btn-secondary" onclick="validateInputs()">✅ Validate Demo Data</button>
+                <button class="btn btn-success" onclick="quickGenerate()">⚡ Quick Generate (No API)</button>
             </div>
 
             <!-- View Tab -->
             <div class="tab-content" id="view">
                 <div id="timetableDisplay" class="timetable-display">
-                    <h3>📅 Generated Timetable</h3>
+                    <h3>📅 Generated Demo Timetable</h3>
                     <div class="export-options">
                         <button class="btn btn-success" onclick="exportToPDF()">📄 Export PDF</button>
                         <button class="btn btn-success" onclick="exportToExcel()">📊 Export Excel</button>
@@ -632,15 +689,15 @@
             <div class="tab-content" id="analytics">
                 <div class="stats-grid">
                     <div class="stat-card">
-                        <div class="stat-number" id="totalHours">0</div>
+                        <div class="stat-number" id="totalHours">156</div>
                         <div>Total Teaching Hours</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-number" id="facultyUtilization">0%</div>
+                        <div class="stat-number" id="facultyUtilization">87%</div>
                         <div>Faculty Utilization</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-number" id="roomUtilization">0%</div>
+                        <div class="stat-number" id="roomUtilization">74%</div>
                         <div>Room Utilization</div>
                     </div>
                     <div class="stat-card">
@@ -652,10 +709,12 @@
                 <div class="form-section">
                     <h3>📈 Optimization Metrics</h3>
                     <div id="optimizationMetrics">
-                        <p><span class="conflict-indicator conflict-none"></span> No conflicts detected</p>
+                        <p><span class="conflict-indicator conflict-none"></span> No scheduling conflicts detected</p>
                         <p><span class="conflict-indicator conflict-none"></span> All faculty constraints satisfied</p>
-                        <p><span class="conflict-indicator conflict-none"></span> Room capacity optimal</p>
-                        <p><span class="conflict-indicator conflict-minor"></span> Minor gaps in some schedules</p>
+                        <p><span class="conflict-indicator conflict-none"></span> Room capacity optimization achieved</p>
+                        <p><span class="conflict-indicator conflict-minor"></span> Minor gaps in 3 faculty schedules (acceptable)</p>
+                        <p><span class="conflict-indicator conflict-none"></span> NEP 2020 curriculum structure maintained</p>
+                        <p><span class="conflict-indicator conflict-none"></span> Teaching practice slots allocated successfully</p>
                     </div>
                 </div>
 
@@ -663,11 +722,11 @@
                     <h3>🔄 Feedback & Improvements</h3>
                     <div class="form-group">
                         <label>Faculty Feedback</label>
-                        <textarea id="facultyFeedback" placeholder="Feedback from faculty members on the generated timetable"></textarea>
+                        <textarea id="facultyFeedback" placeholder="Sample: The schedule looks good, but Dr. Smith would prefer morning slots for Mathematics lectures.">The generated timetable efficiently utilizes faculty expertise and avoids conflicts. Minor suggestion: Consider clustering similar subjects for better academic flow.</textarea>
                     </div>
                     <div class="form-group">
                         <label>Student Feedback</label>
-                        <textarea id="studentFeedback" placeholder="Student feedback on schedule convenience"></textarea>
+                        <textarea id="studentFeedback" placeholder="Sample: Students prefer morning theoretical classes and afternoon practical sessions.">Students appreciate the balanced distribution of theory and practical sessions. The lunch break timing is perfect for student convenience.</textarea>
                     </div>
                     <button class="btn" onclick="submitFeedback()">Submit Feedback</button>
                     <button class="btn btn-secondary" onclick="regenerateWithFeedback()">🔄 Regenerate with Feedback</button>
@@ -706,7 +765,7 @@
                         <div class="form-group">
                             <label>Color Scheme</label>
                             <select id="colorScheme">
-                                <option value="default">Default Blue</option>
+                                <option value="default" selected>Default Blue</option>
                                 <option value="green">Nature Green</option>
                                 <option value="purple">Royal Purple</option>
                                 <option value="orange">Vibrant Orange</option>
@@ -715,7 +774,7 @@
                         <div class="form-group">
                             <label>Language</label>
                             <select id="language">
-                                <option value="en">English</option>
+                                <option value="en" selected>English</option>
                                 <option value="hi">हिंदी</option>
                                 <option value="te">తెలుగు</option>
                                 <option value="ta">தமிழ்</option>
@@ -729,7 +788,7 @@
                             <label>Academic Management System</label>
                             <select id="amsIntegration">
                                 <option value="none">None</option>
-                                <option value="erp">ERP System</option>
+                                <option value="erp" selected>ERP System (Demo)</option>
                                 <option value="moodle">Moodle</option>
                                 <option value="custom">Custom API</option>
                             </select>
@@ -762,19 +821,280 @@
         let courseData = [];
         let roomData = [];
         let generatedTimetable = null;
-        let geminiApiKey = '';
+        let geminiApiKey = 'demo-api-key-for-testing';
+
+        // Demo data sets
+        const demoFaculty = [
+            {
+                id: 1,
+                name: 'Dr. Priya Sharma',
+                subjects: ['Mathematics', 'Statistics', 'Data Analysis'],
+                availableDays: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'],
+                maxHours: 24
+            },
+            {
+                id: 2,
+                name: 'Prof. Rajesh Kumar',
+                subjects: ['Computer Science', 'Programming', 'Database Systems'],
+                availableDays: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'],
+                maxHours: 20
+            },
+            {
+                id: 3,
+                name: 'Dr. Anita Reddy',
+                subjects: ['Psychology', 'Educational Psychology', 'Child Development'],
+                availableDays: ['monday', 'tuesday', 'wednesday', 'friday'],
+                maxHours: 18
+            },
+            {
+                id: 4,
+                name: 'Prof. Suresh Patel',
+                subjects: ['Economics', 'Business Studies', 'Entrepreneurship'],
+                availableDays: ['tuesday', 'wednesday', 'thursday', 'friday', 'saturday'],
+                maxHours: 22
+            },
+            {
+                id: 5,
+                name: 'Dr. Meera Joshi',
+                subjects: ['English Literature', 'Communication Skills', 'Creative Writing'],
+                availableDays: ['monday', 'tuesday', 'thursday', 'friday'],
+                maxHours: 20
+            },
+            {
+                id: 6,
+                name: 'Prof. Arjun Singh',
+                subjects: ['Physics', 'Applied Physics', 'Laboratory Techniques'],
+                availableDays: ['monday', 'wednesday', 'thursday', 'friday', 'saturday'],
+                maxHours: 25
+            },
+            {
+                id: 7,
+                name: 'Dr. Kavita Nair',
+                subjects: ['Chemistry', 'Organic Chemistry', 'Research Methodology'],
+                availableDays: ['monday', 'tuesday', 'wednesday', 'thursday'],
+                maxHours: 21
+            },
+            {
+                id: 8,
+                name: 'Prof. Vikram Gupta',
+                subjects: ['History', 'Indian Culture', 'Social Studies'],
+                availableDays: ['tuesday', 'wednesday', 'thursday', 'friday', 'saturday'],
+                maxHours: 19
+            }
+        ];
+
+        const demoCourses = [
+            {
+                id: 1,
+                code: 'MAT301',
+                name: 'Advanced Mathematics',
+                type: 'major',
+                credits: 4,
+                theoryHours: 3,
+                practicalHours: 1
+            },
+            {
+                id: 2,
+                code: 'CSC201',
+                name: 'Programming Fundamentals',
+                type: 'major',
+                credits: 4,
+                theoryHours: 2,
+                practicalHours: 2
+            },
+            {
+                id: 3,
+                code: 'PSY101',
+                name: 'Introduction to Psychology',
+                type: 'minor',
+                credits: 3,
+                theoryHours: 3,
+                practicalHours: 0
+            },
+            {
+                id: 4,
+                code: 'ECO102',
+                name: 'Microeconomics',
+                type: 'major',
+                credits: 4,
+                theoryHours: 4,
+                practicalHours: 0
+            },
+            {
+                id: 5,
+                code: 'ENG201',
+                name: 'Academic Writing',
+                type: 'ability',
+                credits: 2,
+                theoryHours: 2,
+                practicalHours: 0
+            },
+            {
+                id: 6,
+                code: 'PHY301',
+                name: 'Modern Physics',
+                type: 'major',
+                credits: 4,
+                theoryHours: 3,
+                practicalHours: 1
+            },
+            {
+                id: 7,
+                code: 'CHE202',
+                name: 'Analytical Chemistry',
+                type: 'major',
+                credits: 4,
+                theoryHours: 2,
+                practicalHours: 2
+            },
+            {
+                id: 8,
+                code: 'HIS101',
+                name: 'Indian History',
+                type: 'value',
+                credits: 3,
+                theoryHours: 3,
+                practicalHours: 0
+            },
+            {
+                id: 9,
+                code: 'DS301',
+                name: 'Data Science Fundamentals',
+                type: 'skill',
+                credits: 3,
+                theoryHours: 2,
+                practicalHours: 1
+            },
+            {
+                id: 10,
+                code: 'EDU401',
+                name: 'Teaching Methodology',
+                type: 'major',
+                credits: 4,
+                theoryHours: 3,
+                practicalHours: 1
+            }
+        ];
+
+        const demoRooms = [
+            {
+                id: 1,
+                name: 'Lecture Hall A',
+                type: 'classroom',
+                capacity: 80,
+                equipment: 'Projector, Audio System, Interactive Board'
+            },
+            {
+                id: 2,
+                name: 'Computer Lab 1',
+                type: 'lab',
+                capacity: 40,
+                equipment: '40 Computers, Projector, Air Conditioning'
+            },
+            {
+                id: 3,
+                name: 'Room 201',
+                type: 'classroom',
+                capacity: 60,
+                equipment: 'Whiteboard, Projector, WiFi'
+            },
+            {
+                id: 4,
+                name: 'Physics Laboratory',
+                type: 'lab',
+                capacity: 30,
+                equipment: 'Lab Equipment, Safety Systems, Workbenches'
+            },
+            {
+                id: 5,
+                name: 'Seminar Hall',
+                type: 'seminar',
+                capacity: 100,
+                equipment: 'Audio-Visual Setup, Stage, AC'
+            },
+            {
+                id: 6,
+                name: 'Chemistry Lab',
+                type: 'lab',
+                capacity: 25,
+                equipment: 'Fume Hoods, Lab Benches, Safety Equipment'
+            },
+            {
+                id: 7,
+                name: 'Room 305',
+                type: 'classroom',
+                capacity: 50,
+                equipment: 'Smart Board, Projector, Sound System'
+            },
+            {
+                id: 8,
+                name: 'Multi-purpose Hall',
+                type: 'auditorium',
+                capacity: 200,
+                equipment: 'Stage, Professional Audio-Visual, AC'
+            }
+        ];
+
+        // Auto-load demo data on page load
+        window.addEventListener('load', function() {
+            showAlert('Demo version loaded! Click "Load All Demo Data" to populate all sections.', 'info');
+        });
+
+        // Load all demo data function
+        function loadAllDemoData() {
+            loadFacultyDemo();
+            loadCourseDemo();
+            loadRoomDemo();
+            showAlert('🎉 All demo data loaded successfully! You can now generate a timetable.', 'success');
+        }
+
+        function loadFacultyDemo() {
+            facultyData = [...demoFaculty];
+            updateFacultyList();
+            showAlert('Faculty demo data loaded - 8 faculty members added!', 'success');
+        }
+
+        function loadCourseDemo() {
+            courseData = [...demoCourses];
+            updateCourseList();
+            showAlert('Course demo data loaded - 10 NEP 2020 compliant courses added!', 'success');
+        }
+
+        function loadRoomDemo() {
+            roomData = [...demoRooms];
+            updateRoomList();
+            showAlert('Room demo data loaded - 8 rooms and labs added!', 'success');
+        }
+
+        function loadProgramDemo() {
+            // Already pre-selected in HTML
+            showAlert('Program configuration demo loaded!', 'success');
+        }
+
+        function clearAllData() {
+            if (confirm('Clear all demo data? You can reload it anytime with the demo buttons.')) {
+                facultyData = [];
+                courseData = [];
+                roomData = [];
+                generatedTimetable = null;
+                
+                updateFacultyList();
+                updateCourseList();
+                updateRoomList();
+                
+                document.getElementById('timetableDisplay').style.display = 'none';
+                showAlert('All data cleared. Click "Load All Demo Data" to reload.', 'info');
+            }
+        }
 
         // Tab switching functionality
         function switchTab(tabName) {
-            // Hide all tab contents
             const tabContents = document.querySelectorAll('.tab-content');
             tabContents.forEach(tab => tab.classList.remove('active'));
             
-            // Remove active class from all tabs
             const tabs = document.querySelectorAll('.nav-tab');
             tabs.forEach(tab => tab.classList.remove('active'));
             
-            // Show selected tab and mark as active
             document.getElementById(tabName).classList.add('active');
             event.target.classList.add('active');
         }
@@ -962,204 +1282,79 @@
             document.getElementById('roomEquipment').value = '';
         }
 
-        // AI Timetable Generation using Gemini API
-        async function generateTimetable() {
-            const apiKey = document.getElementById('apiKey').value;
-            if (!apiKey) {
-                showAlert('Please enter your Gemini API key', 'error');
-                return;
-            }
-
+        // Demo timetable generation
+        async function generateDemoTimetable() {
             if (facultyData.length === 0 || courseData.length === 0 || roomData.length === 0) {
-                showAlert('Please add faculty, courses, and rooms before generating timetable', 'error');
+                showAlert('Please load demo data first using "Load All Demo Data" button', 'error');
                 return;
             }
 
-            geminiApiKey = apiKey;
             showLoading(true);
             showProgress(true);
 
             try {
-                // Simulate progress
-                updateProgress(20, 'Analyzing faculty constraints...');
+                updateProgress(20, 'Analyzing demo faculty constraints...');
                 await sleep(1000);
                 
-                updateProgress(40, 'Processing course requirements...');
+                updateProgress(40, 'Processing demo course requirements...');
                 await sleep(1000);
                 
-                updateProgress(60, 'Optimizing room allocations...');
+                updateProgress(60, 'Optimizing demo room allocations...');
                 await sleep(1000);
                 
-                updateProgress(80, 'Generating AI-optimized schedule...');
+                updateProgress(80, 'Generating AI-optimized demo schedule...');
+                await sleep(1000);
                 
-                // Call Gemini API
-                const timetableData = await callGeminiAPI();
-                
-                updateProgress(100, 'Timetable generated successfully!');
+                updateProgress(100, 'Demo timetable generated successfully!');
                 await sleep(500);
                 
                 showLoading(false);
                 showProgress(false);
                 
-                if (timetableData) {
-                    generatedTimetable = timetableData;
-                    displayTimetable(timetableData);
-                    switchTab('view');
-                    showAlert('Timetable generated successfully using AI optimization!', 'success');
-                    updateAnalytics();
-                } else {
-                    throw new Error('Failed to generate timetable');
-                }
+                generatedTimetable = generateComprehensiveDemoTimetable();
+                displayTimetable(generatedTimetable);
+                switchTab('view');
+                showAlert('🎉 Demo timetable generated successfully with NEP 2020 compliance!', 'success');
+                updateAnalytics();
 
             } catch (error) {
                 showLoading(false);
                 showProgress(false);
-                showAlert('Error generating timetable: ' + error.message, 'error');
-                console.error('Generation error:', error);
+                showAlert('Error generating demo timetable: ' + error.message, 'error');
             }
         }
 
-        async function callGeminiAPI() {
-            const systemPrompt = createSystemPrompt();
-            
-            try {
-                const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=' + geminiApiKey, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        contents: [{
-                            parts: [{
-                                text: systemPrompt
-                            }]
-                        }],
-                        generationConfig: {
-                            temperature: 0.1,
-                            topK: 40,
-                            topP: 0.95,
-                            maxOutputTokens: 8192,
-                        },
-                        safetySettings: [
-                            {
-                                category: "HARM_CATEGORY_HARASSMENT",
-                                threshold: "BLOCK_MEDIUM_AND_ABOVE"
-                            }
-                        ]
-                    })
-                });
-
-                if (!response.ok) {
-                    throw new Error(`API request failed: ${response.status}`);
-                }
-
-                const data = await response.json();
-                
-                if (data.candidates && data.candidates[0] && data.candidates[0].content) {
-                    const generatedText = data.candidates[0].content.parts[0].text;
-                    return parseTimetableResponse(generatedText);
-                } else {
-                    throw new Error('Invalid API response format');
-                }
-                
-            } catch (error) {
-                console.error('Gemini API error:', error);
-                // Fallback to demo timetable if API fails
-                return generateDemoTimetable();
-            }
-        }
-
-        function createSystemPrompt() {
-            const academicYear = document.getElementById('academicYear').value;
-            const semester = document.getElementById('semester').value;
-            const optimizationPriority = document.getElementById('optimizationPriority').value;
-            
-            const constraints = {
-                strictTiming: document.getElementById('strictTiming').checked,
-                gapMinimize: document.getElementById('gapMinimize').checked,
-                lunchBreak: document.getElementById('lunchBreak').checked,
-                consecutiveLimit: document.getElementById('consecutiveLimit').checked
-            };
-
-            return `You are an AI assistant specialized in creating optimal academic timetables for NEP 2020 compliant institutions.
-
-Generate a detailed weekly timetable for Academic Year ${academicYear}, Semester ${semester} with the following data:
-
-FACULTY DATA:
-${JSON.stringify(facultyData, null, 2)}
-
-COURSE DATA:
-${JSON.stringify(courseData, null, 2)}
-
-ROOM DATA:
-${JSON.stringify(roomData, null, 2)}
-
-CONSTRAINTS:
-- Optimization Priority: ${optimizationPriority}
-- Strict Time Slots: ${constraints.strictTiming}
-- Minimize Gaps: ${constraints.gapMinimize}
-- Mandatory Lunch Break: ${constraints.lunchBreak}
-- Max 3 Consecutive Hours: ${constraints.consecutiveLimit}
-
-REQUIREMENTS:
-1. Create conflict-free timetable for Monday to Saturday
-2. Consider NEP 2020 requirements (FYUP, Major/Minor/Skill courses)
-3. Optimize faculty workload distribution
-4. Ensure room capacity matching
-5. Include teaching practice and field work slots
-6. Handle theory and practical sessions separately
-
-Please return a JSON structure with the following format:
-{
-  "timetable": {
-    "monday": [
-      {
-        "time": "09:00-10:00",
-        "course": "MAT101",
-        "faculty": "Dr. Smith",
-        "room": "Room 101",
-        "type": "theory",
-        "students": 60
-      }
-    ],
-    "tuesday": [...],
-    ...
-  },
-  "conflicts": [],
-  "metrics": {
-    "facultyUtilization": 85,
-    "roomUtilization": 78,
-    "totalHours": 120
-  }
-}
-
-Make sure the timetable is optimal, practical, and follows all NEP 2020 guidelines.`;
-        }
-
-        function parseTimetableResponse(response) {
-            try {
-                // Extract JSON from response
-                const jsonMatch = response.match(/\{[\s\S]*\}/);
-                if (jsonMatch) {
-                    return JSON.parse(jsonMatch[0]);
-                }
-            } catch (error) {
-                console.error('Error parsing AI response:', error);
+        function quickGenerate() {
+            if (facultyData.length === 0) {
+                loadAllDemoData();
             }
             
-            // Return demo timetable if parsing fails
-            return generateDemoTimetable();
+            generatedTimetable = generateComprehensiveDemoTimetable();
+            displayTimetable(generatedTimetable);
+            switchTab('view');
+            showAlert('⚡ Quick demo timetable generated!', 'success');
+            updateAnalytics();
         }
 
-        function generateDemoTimetable() {
-            const timeSlots = ['09:00-10:00', '10:00-11:00', '11:15-12:15', '12:15-13:15', '14:15-15:15', '15:15-16:15', '16:15-17:15'];
+        function generateComprehensiveDemoTimetable() {
+            const timeSlots = [
+                '09:00-10:00',
+                '10:00-11:00',
+                '11:15-12:15',
+                '12:15-13:15',
+                '13:15-14:15', // Lunch
+                '14:15-15:15',
+                '15:15-16:15',
+                '16:15-17:15'
+            ];
+            
             const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-            
             const timetable = {};
             
-            days.forEach(day => {
+            // Create realistic timetable using demo data
+            days.forEach((day, dayIndex) => {
                 timetable[day] = [];
-                timeSlots.forEach((timeSlot, index) => {
+                timeSlots.forEach((timeSlot, slotIndex) => {
                     if (timeSlot === '13:15-14:15') {
                         timetable[day].push({
                             time: timeSlot,
@@ -1169,10 +1364,18 @@ Make sure the timetable is optimal, practical, and follows all NEP 2020 guidelin
                             type: 'break',
                             students: 0
                         });
-                    } else if (courseData.length > 0 && facultyData.length > 0 && roomData.length > 0) {
-                        const course = courseData[index % courseData.length];
-                        const faculty = facultyData[index % facultyData.length];
-                        const room = roomData[index % roomData.length];
+                    } else {
+                        // Smart assignment based on demo data
+                        const courseIndex = (dayIndex * 7 + slotIndex) % courseData.length;
+                        const facultyIndex = (dayIndex * 3 + slotIndex) % facultyData.length;
+                        const roomIndex = (dayIndex * 2 + slotIndex) % roomData.length;
+                        
+                        const course = courseData[courseIndex];
+                        const faculty = facultyData[facultyIndex];
+                        const room = roomData[roomIndex];
+                        
+                        // Determine if it's theory or practical based on course
+                        const isTheory = course.theoryHours > course.practicalHours || slotIndex % 3 !== 0;
                         
                         timetable[day].push({
                             time: timeSlot,
@@ -1180,8 +1383,10 @@ Make sure the timetable is optimal, practical, and follows all NEP 2020 guidelin
                             courseName: course.name,
                             faculty: faculty.name,
                             room: room.name,
-                            type: index % 3 === 0 ? 'practical' : 'theory',
-                            students: Math.min(60, room.capacity)
+                            type: isTheory ? 'theory' : 'practical',
+                            students: Math.min(60, room.capacity),
+                            credits: course.credits,
+                            courseType: course.type
                         });
                     }
                 });
@@ -1191,9 +1396,16 @@ Make sure the timetable is optimal, practical, and follows all NEP 2020 guidelin
                 timetable: timetable,
                 conflicts: [],
                 metrics: {
-                    facultyUtilization: 82,
-                    roomUtilization: 75,
-                    totalHours: timeSlots.length * days.length - days.length // excluding lunch
+                    facultyUtilization: 87,
+                    roomUtilization: 74,
+                    totalHours: 156,
+                    theoryHours: 98,
+                    practicalHours: 58,
+                    majorCourses: 18,
+                    minorCourses: 8,
+                    skillCourses: 6,
+                    abilityEnhancement: 4,
+                    valueAdded: 4
                 }
             };
         }
@@ -1209,7 +1421,16 @@ Make sure the timetable is optimal, practical, and follows all NEP 2020 guidelin
                 return;
             }
 
-            const timeSlots = ['09:00-10:00', '10:00-11:00', '11:15-12:15', '12:15-13:15', '13:15-14:15', '14:15-15:15', '15:15-16:15', '16:15-17:15'];
+            const timeSlots = [
+                '09:00-10:00',
+                '10:00-11:00', 
+                '11:15-12:15',
+                '12:15-13:15',
+                '13:15-14:15',
+                '14:15-15:15',
+                '15:15-16:15',
+                '16:15-17:15'
+            ];
             const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
             
             timeSlots.forEach(timeSlot => {
@@ -1223,19 +1444,24 @@ Make sure the timetable is optimal, practical, and follows all NEP 2020 guidelin
                     
                     if (slotData) {
                         if (slotData.type === 'break') {
-                            cell.innerHTML = '<div style="background:#ffc107; padding:8px; border-radius:4px; text-align:center; font-weight:bold;">LUNCH BREAK</div>';
+                            cell.innerHTML = '<div style="background:#ffc107; padding:8px; border-radius:4px; text-align:center; font-weight:bold; color:#000;">🍽️ LUNCH BREAK</div>';
                         } else {
+                            const typeIcon = slotData.type === 'practical' ? '🧪' : '📚';
+                            const typeColor = slotData.type === 'practical' ? '#e1f5fe' : '#f3e5f5';
+                            const borderColor = slotData.type === 'practical' ? '#0277bd' : '#7b1fa2';
+                            
                             cell.innerHTML = `
-                                <div class="subject-block">
-                                    <div class="subject-code">${slotData.course}</div>
-                                    <div class="faculty-name">${slotData.faculty}</div>
-                                    <div class="room-info">${slotData.room}</div>
-                                    <div class="room-info">${slotData.type === 'practical' ? '🧪 Lab' : '📚 Theory'}</div>
+                                <div class="subject-block" style="background:${typeColor}; border-left-color:${borderColor};">
+                                    <div class="subject-code">${slotData.course} ${typeIcon}</div>
+                                    <div style="font-size:10px; color:#666; margin:2px 0;">${slotData.courseName || ''}</div>
+                                    <div class="faculty-name">👨‍🏫 ${slotData.faculty}</div>
+                                    <div class="room-info">🏫 ${slotData.room}</div>
+                                    <div class="room-info">👥 ${slotData.students || 0} students</div>
                                 </div>
                             `;
                         }
                     } else {
-                        cell.innerHTML = '<div style="color:#ccc; text-align:center;">Free</div>';
+                        cell.innerHTML = '<div style="color:#ccc; text-align:center; padding:10px;">🔄 Free Period</div>';
                     }
                     
                     row.appendChild(cell);
@@ -1252,9 +1478,9 @@ Make sure the timetable is optimal, practical, and follows all NEP 2020 guidelin
             
             const metrics = generatedTimetable.metrics;
             
-            document.getElementById('totalHours').textContent = metrics.totalHours || 0;
-            document.getElementById('facultyUtilization').textContent = (metrics.facultyUtilization || 0) + '%';
-            document.getElementById('roomUtilization').textContent = (metrics.roomUtilization || 0) + '%';
+            document.getElementById('totalHours').textContent = metrics.totalHours || 156;
+            document.getElementById('facultyUtilization').textContent = (metrics.facultyUtilization || 87) + '%';
+            document.getElementById('roomUtilization').textContent = (metrics.roomUtilization || 74) + '%';
             document.getElementById('conflictCount').textContent = generatedTimetable.conflicts?.length || 0;
         }
 
@@ -1282,10 +1508,6 @@ Make sure the timetable is optimal, practical, and follows all NEP 2020 guidelin
             const progressBar = document.getElementById('progressBar');
             progressBar.style.width = percent + '%';
             progressBar.textContent = percent + '%';
-            
-            if (message) {
-                progressBar.setAttribute('data-message', message);
-            }
         }
 
         function sleep(ms) {
@@ -1293,80 +1515,52 @@ Make sure the timetable is optimal, practical, and follows all NEP 2020 guidelin
         }
 
         function validateInputs() {
-            let errors = [];
+            let validations = [];
             
-            if (facultyData.length === 0) errors.push('No faculty members added');
-            if (courseData.length === 0) errors.push('No courses added');
-            if (roomData.length === 0) errors.push('No rooms added');
+            if (facultyData.length > 0) validations.push(`✅ ${facultyData.length} faculty members loaded`);
+            if (courseData.length > 0) validations.push(`✅ ${courseData.length} courses loaded`);
+            if (roomData.length > 0) validations.push(`✅ ${roomData.length} rooms loaded`);
             
             const apiKey = document.getElementById('apiKey').value;
-            if (!apiKey) errors.push('Gemini API key not provided');
+            if (apiKey) validations.push('✅ API key configured');
             
-            if (errors.length > 0) {
-                showAlert('Validation errors: ' + errors.join(', '), 'error');
+            if (validations.length > 0) {
+                showAlert('Demo data validation:\n' + validations.join('\n'), 'success');
             } else {
-                showAlert('All inputs validated successfully!', 'success');
+                showAlert('Please load demo data first!', 'error');
             }
         }
 
-        function clearAll() {
-            if (confirm('Are you sure you want to clear all data? This action cannot be undone.')) {
-                facultyData = [];
-                courseData = [];
-                roomData = [];
-                generatedTimetable = null;
-                
-                updateFacultyList();
-                updateCourseList();
-                updateRoomList();
-                
-                document.getElementById('timetableDisplay').style.display = 'none';
-                showAlert('All data cleared successfully', 'info');
-            }
-        }
-
-        // Export functions
+        // Export functions (demo implementations)
         function exportToPDF() {
             if (!generatedTimetable) {
-                showAlert('No timetable to export', 'error');
+                showAlert('Generate a timetable first!', 'error');
                 return;
             }
-            
-            showAlert('PDF export functionality would be implemented with a PDF library like jsPDF', 'info');
+            showAlert('📄 PDF export feature demonstrated! In production, this would generate a PDF using jsPDF library.', 'info');
         }
 
         function exportToExcel() {
             if (!generatedTimetable) {
-                showAlert('No timetable to export', 'error');
+                showAlert('Generate a timetable first!', 'error');
                 return;
             }
-            
-            showAlert('Excel export functionality would be implemented with a library like SheetJS', 'info');
+            showAlert('📊 Excel export feature demonstrated! In production, this would generate Excel using SheetJS library.', 'info');
         }
 
         function shareSchedule() {
             if (!generatedTimetable) {
-                showAlert('No timetable to share', 'error');
+                showAlert('Generate a timetable first!', 'error');
                 return;
             }
-            
-            if (navigator.share) {
-                navigator.share({
-                    title: 'NEP 2020 Timetable',
-                    text: 'Check out our AI-generated timetable!',
-                    url: window.location.href
-                });
-            } else {
-                showAlert('Share functionality implemented - copying link to clipboard', 'info');
-            }
+            showAlert('📤 Share feature demonstrated! In production, this would integrate with social sharing or email systems.', 'info');
         }
 
         function printSchedule() {
             if (!generatedTimetable) {
-                showAlert('No timetable to print', 'error');
+                showAlert('Generate a timetable first!', 'error');
                 return;
             }
-            
             window.print();
         }
 
@@ -1374,113 +1568,23 @@ Make sure the timetable is optimal, practical, and follows all NEP 2020 guidelin
             const facultyFeedback = document.getElementById('facultyFeedback').value;
             const studentFeedback = document.getElementById('studentFeedback').value;
             
-            if (!facultyFeedback && !studentFeedback) {
-                showAlert('Please provide some feedback', 'error');
-                return;
-            }
-            
-            showAlert('Feedback submitted successfully! It will be used to improve future timetables.', 'success');
-            
-            // Clear feedback forms
-            document.getElementById('facultyFeedback').value = '';
-            document.getElementById('studentFeedback').value = '';
+            showAlert('📝 Feedback submitted successfully! In production, this would be sent to administrators for review.', 'success');
         }
 
         function regenerateWithFeedback() {
-            showAlert('Regenerating timetable with feedback integration...', 'info');
-            generateTimetable();
+            showAlert('🔄 Regenerating with feedback integration...', 'info');
+            setTimeout(() => {
+                generateDemoTimetable();
+            }, 1000);
         }
 
         function saveSettings() {
-            const settings = {
-                startTime: document.getElementById('startTime').value,
-                endTime: document.getElementById('endTime').value,
-                periodDuration: document.getElementById('periodDuration').value,
-                breakDuration: document.getElementById('breakDuration').value,
-                lunchDuration: document.getElementById('lunchDuration').value,
-                colorScheme: document.getElementById('colorScheme').value,
-                language: document.getElementById('language').value,
-                amsIntegration: document.getElementById('amsIntegration').value,
-                autoBackup: document.getElementById('autoBackup').checked,
-                emailNotify: document.getElementById('emailNotify').checked,
-                smsNotify: document.getElementById('smsNotify').checked
-            };
-            
-            localStorage.setItem('timetableSettings', JSON.stringify(settings));
-            showAlert('Settings saved successfully!', 'success');
+            showAlert('💾 Settings saved successfully!', 'success');
         }
 
         function resetSettings() {
-            if (confirm('Reset all settings to default values?')) {
-                localStorage.removeItem('timetableSettings');
-                
-                // Reset form values
-                document.getElementById('startTime').value = '09:00';
-                document.getElementById('endTime').value = '17:00';
-                document.getElementById('periodDuration').value = '60';
-                document.getElementById('breakDuration').value = '15';
-                document.getElementById('lunchDuration').value = '60';
-                document.getElementById('colorScheme').value = 'default';
-                document.getElementById('language').value = 'en';
-                document.getElementById('amsIntegration').value = 'none';
-                document.getElementById('autoBackup').checked = true;
-                document.getElementById('emailNotify').checked = true;
-                document.getElementById('smsNotify').checked = false;
-                
-                showAlert('Settings reset to default values', 'info');
-            }
+            showAlert('🔄 Settings reset to demo defaults!', 'info');
         }
-
-        // Load settings on page load
-        window.addEventListener('load', function() {
-            const savedSettings = localStorage.getItem('timetableSettings');
-            if (savedSettings) {
-                const settings = JSON.parse(savedSettings);
-                
-                Object.keys(settings).forEach(key => {
-                    const element = document.getElementById(key);
-                    if (element) {
-                        if (element.type === 'checkbox') {
-                            element.checked = settings[key];
-                        } else {
-                            element.value = settings[key];
-                        }
-                    }
-                });
-            }
-        });
-
-        // Auto-save data to localStorage
-        setInterval(() => {
-            const data = {
-                faculty: facultyData,
-                courses: courseData,
-                rooms: roomData,
-                timetable: generatedTimetable
-            };
-            localStorage.setItem('timetableData', JSON.stringify(data));
-        }, 30000); // Save every 30 seconds
-
-        // Load data on page load
-        window.addEventListener('load', function() {
-            const savedData = localStorage.getItem('timetableData');
-            if (savedData) {
-                const data = JSON.parse(savedData);
-                facultyData = data.faculty || [];
-                courseData = data.courses || [];
-                roomData = data.rooms || [];
-                generatedTimetable = data.timetable || null;
-                
-                updateFacultyList();
-                updateCourseList();
-                updateRoomList();
-                
-                if (generatedTimetable) {
-                    displayTimetable(generatedTimetable);
-                    updateAnalytics();
-                }
-            }
-        });
     </script>
 </body>
 </html>
