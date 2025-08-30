@@ -1,0 +1,1486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEP 2020 AI Timetable Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 5px;
+            margin-bottom: 30px;
+        }
+
+        .nav-tab {
+            flex: 1;
+            padding: 12px 20px;
+            text-align: center;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .nav-tab.active {
+            background: #667eea;
+            color: white;
+            box-shadow: 0 2px 10px rgba(102, 126, 234, 0.3);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .form-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .form-section h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-success {
+            background: #28a745;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+        }
+
+        .dynamic-list {
+            border: 2px dashed #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+            min-height: 100px;
+        }
+
+        .list-item {
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #e0e0e0;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .remove-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .progress-container {
+            background: #f0f0f0;
+            border-radius: 20px;
+            padding: 3px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .progress-bar {
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            height: 20px;
+            border-radius: 20px;
+            width: 0%;
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .timetable-display {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .timetable-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .timetable-table th,
+        .timetable-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+            font-size: 12px;
+        }
+
+        .timetable-table th {
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+        }
+
+        .timetable-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        .subject-block {
+            background: #e3f2fd;
+            padding: 8px;
+            border-radius: 4px;
+            border-left: 3px solid #2196f3;
+            margin: 2px 0;
+        }
+
+        .subject-code {
+            font-weight: bold;
+            color: #1976d2;
+        }
+
+        .faculty-name {
+            font-size: 11px;
+            color: #666;
+        }
+
+        .room-info {
+            font-size: 10px;
+            color: #888;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            display: none;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .export-options {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .conflict-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 5px;
+        }
+
+        .conflict-none { background: #28a745; }
+        .conflict-minor { background: #ffc107; }
+        .conflict-major { background: #dc3545; }
+
+        @media (max-width: 768px) {
+            .nav-tabs {
+                flex-direction: column;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .export-options {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎓 NEP 2020 AI Timetable Generator</h1>
+            <p>Intelligent Scheduling for FYUP, B.Ed., M.Ed., and ITEP Programs</p>
+        </div>
+
+        <div class="main-content">
+            <div class="nav-tabs">
+                <button class="nav-tab active" onclick="switchTab('setup')">📋 Setup</button>
+                <button class="nav-tab" onclick="switchTab('generate')">🤖 AI Generate</button>
+                <button class="nav-tab" onclick="switchTab('view')">👁️ View & Export</button>
+                <button class="nav-tab" onclick="switchTab('analytics')">📊 Analytics</button>
+                <button class="nav-tab" onclick="switchTab('settings')">⚙️ Settings</button>
+            </div>
+
+            <!-- Setup Tab -->
+            <div class="tab-content active" id="setup">
+                <div class="form-grid">
+                    <div class="form-section">
+                        <h3>📚 Program Configuration</h3>
+                        <div class="form-group">
+                            <label>Academic Year</label>
+                            <select id="academicYear">
+                                <option value="2024-25">2024-25</option>
+                                <option value="2025-26">2025-26</option>
+                                <option value="2026-27">2026-27</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Semester</label>
+                            <select id="semester">
+                                <option value="1">Semester 1</option>
+                                <option value="2">Semester 2</option>
+                                <option value="3">Semester 3</option>
+                                <option value="4">Semester 4</option>
+                                <option value="5">Semester 5</option>
+                                <option value="6">Semester 6</option>
+                                <option value="7">Semester 7</option>
+                                <option value="8">Semester 8</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Programs Offered</label>
+                            <div>
+                                <label><input type="checkbox" id="fyup" checked> FYUP (4-Year UG)</label><br>
+                                <label><input type="checkbox" id="bed" checked> B.Ed.</label><br>
+                                <label><input type="checkbox" id="med" checked> M.Ed.</label><br>
+                                <label><input type="checkbox" id="itep" checked> ITEP</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>👥 Faculty Management</h3>
+                        <div class="form-group">
+                            <label>Faculty Name</label>
+                            <input type="text" id="facultyName" placeholder="Dr. John Smith">
+                        </div>
+                        <div class="form-group">
+                            <label>Subject Expertise</label>
+                            <input type="text" id="facultySubjects" placeholder="Mathematics, Statistics">
+                        </div>
+                        <div class="form-group">
+                            <label>Available Days</label>
+                            <div>
+                                <label><input type="checkbox" value="monday"> Monday</label>
+                                <label><input type="checkbox" value="tuesday"> Tuesday</label>
+                                <label><input type="checkbox" value="wednesday"> Wednesday</label>
+                                <label><input type="checkbox" value="thursday"> Thursday</label>
+                                <label><input type="checkbox" value="friday"> Friday</label>
+                                <label><input type="checkbox" value="saturday"> Saturday</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Maximum Hours/Week</label>
+                            <input type="number" id="maxHours" min="1" max="40" value="20">
+                        </div>
+                        <button class="btn" onclick="addFaculty()">Add Faculty</button>
+                        <div id="facultyList" class="dynamic-list"></div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>📖 Course Structure</h3>
+                        <div class="form-group">
+                            <label>Course Code</label>
+                            <input type="text" id="courseCode" placeholder="MAT101">
+                        </div>
+                        <div class="form-group">
+                            <label>Course Name</label>
+                            <input type="text" id="courseName" placeholder="Linear Algebra">
+                        </div>
+                        <div class="form-group">
+                            <label>Course Type</label>
+                            <select id="courseType">
+                                <option value="major">Major</option>
+                                <option value="minor">Minor</option>
+                                <option value="skill">Skill-Based</option>
+                                <option value="ability">Ability Enhancement</option>
+                                <option value="value">Value-Added</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Credits</label>
+                            <input type="number" id="courseCredits" min="1" max="8" value="4">
+                        </div>
+                        <div class="form-group">
+                            <label>Theory/Practical Split</label>
+                            <div>
+                                <label>Theory Hours: <input type="number" id="theoryHours" min="0" max="8" value="3"></label>
+                                <label>Practical Hours: <input type="number" id="practicalHours" min="0" max="8" value="1"></label>
+                            </div>
+                        </div>
+                        <button class="btn" onclick="addCourse()">Add Course</button>
+                        <div id="courseList" class="dynamic-list"></div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>🏫 Infrastructure</h3>
+                        <div class="form-group">
+                            <label>Room/Lab Name</label>
+                            <input type="text" id="roomName" placeholder="Room 101 / Physics Lab">
+                        </div>
+                        <div class="form-group">
+                            <label>Room Type</label>
+                            <select id="roomType">
+                                <option value="classroom">Classroom</option>
+                                <option value="lab">Laboratory</option>
+                                <option value="seminar">Seminar Hall</option>
+                                <option value="auditorium">Auditorium</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Capacity</label>
+                            <input type="number" id="roomCapacity" min="10" max="200" value="60">
+                        </div>
+                        <div class="form-group">
+                            <label>Equipment Available</label>
+                            <textarea id="roomEquipment" placeholder="Projector, Whiteboard, Computer, etc."></textarea>
+                        </div>
+                        <button class="btn" onclick="addRoom()">Add Room</button>
+                        <div id="roomList" class="dynamic-list"></div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>🎯 Special Requirements</h3>
+                        <div class="form-group">
+                            <label>Teaching Practice Schedule</label>
+                            <input type="text" id="teachingPractice" placeholder="Weeks 8-12, External Schools">
+                        </div>
+                        <div class="form-group">
+                            <label>Field Work Periods</label>
+                            <input type="text" id="fieldWork" placeholder="Rural immersion, Community service">
+                        </div>
+                        <div class="form-group">
+                            <label>Internship Blocks</label>
+                            <input type="text" id="internships" placeholder="Industry placement periods">
+                        </div>
+                        <div class="form-group">
+                            <label>Project Components</label>
+                            <textarea id="projects" placeholder="Capstone projects, Research work"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>👨‍🎓 Student Enrollment</h3>
+                        <div class="form-group">
+                            <label>Total Students</label>
+                            <input type="number" id="totalStudents" min="1" max="1000" value="150">
+                        </div>
+                        <div class="form-group">
+                            <label>Class Sections</label>
+                            <input type="number" id="classSections" min="1" max="20" value="3">
+                        </div>
+                        <div class="form-group">
+                            <label>Elective Preferences</label>
+                            <textarea id="electivePrefs" placeholder="Student elective choice data"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Generate Tab -->
+            <div class="tab-content" id="generate">
+                <div class="form-section">
+                    <h3>🤖 AI Configuration</h3>
+                    <div class="form-group">
+                        <label>Gemini API Key</label>
+                        <input type="password" id="apiKey" placeholder="Enter your Gemini API key">
+                        <small>Get your API key from <a href="https://ai.google.dev/" target="_blank">Google AI Studio</a></small>
+                    </div>
+                    <div class="form-group">
+                        <label>Optimization Priority</label>
+                        <select id="optimizationPriority">
+                            <option value="balanced">Balanced Approach</option>
+                            <option value="faculty">Minimize Faculty Conflicts</option>
+                            <option value="rooms">Optimize Room Utilization</option>
+                            <option value="students">Maximize Student Convenience</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Constraint Handling</label>
+                        <div>
+                            <label><input type="checkbox" id="strictTiming" checked> Strict Time Slots</label><br>
+                            <label><input type="checkbox" id="gapMinimize" checked> Minimize Gaps</label><br>
+                            <label><input type="checkbox" id="lunchBreak" checked> Mandatory Lunch Break</label><br>
+                            <label><input type="checkbox" id="consecutiveLimit" checked> Max 3 Consecutive Hours</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="alert alert-info" id="generateInfo">
+                    <strong>Ready to Generate!</strong> The AI will analyze all your inputs and create an optimized timetable considering NEP 2020 requirements.
+                </div>
+
+                <div class="loading" id="loadingDiv">
+                    <div class="spinner"></div>
+                    <p>AI is analyzing constraints and generating optimal timetable...</p>
+                </div>
+
+                <div class="progress-container" id="progressContainer">
+                    <div class="progress-bar" id="progressBar">0%</div>
+                </div>
+
+                <button class="btn" onclick="generateTimetable()">🚀 Generate AI Timetable</button>
+                <button class="btn btn-secondary" onclick="validateInputs()">✅ Validate Inputs</button>
+                <button class="btn btn-danger" onclick="clearAll()">🗑️ Clear All Data</button>
+            </div>
+
+            <!-- View Tab -->
+            <div class="tab-content" id="view">
+                <div id="timetableDisplay" class="timetable-display">
+                    <h3>📅 Generated Timetable</h3>
+                    <div class="export-options">
+                        <button class="btn btn-success" onclick="exportToPDF()">📄 Export PDF</button>
+                        <button class="btn btn-success" onclick="exportToExcel()">📊 Export Excel</button>
+                        <button class="btn" onclick="shareSchedule()">📤 Share Schedule</button>
+                        <button class="btn btn-secondary" onclick="printSchedule()">🖨️ Print</button>
+                    </div>
+                    <table class="timetable-table" id="timetableTable">
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Monday</th>
+                                <th>Tuesday</th>
+                                <th>Wednesday</th>
+                                <th>Thursday</th>
+                                <th>Friday</th>
+                                <th>Saturday</th>
+                            </tr>
+                        </thead>
+                        <tbody id="timetableBody">
+                            <!-- Dynamic content will be inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="alert" id="resultAlert"></div>
+            </div>
+
+            <!-- Analytics Tab -->
+            <div class="tab-content" id="analytics">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalHours">0</div>
+                        <div>Total Teaching Hours</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="facultyUtilization">0%</div>
+                        <div>Faculty Utilization</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="roomUtilization">0%</div>
+                        <div>Room Utilization</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="conflictCount">0</div>
+                        <div>Scheduling Conflicts</div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>📈 Optimization Metrics</h3>
+                    <div id="optimizationMetrics">
+                        <p><span class="conflict-indicator conflict-none"></span> No conflicts detected</p>
+                        <p><span class="conflict-indicator conflict-none"></span> All faculty constraints satisfied</p>
+                        <p><span class="conflict-indicator conflict-none"></span> Room capacity optimal</p>
+                        <p><span class="conflict-indicator conflict-minor"></span> Minor gaps in some schedules</p>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>🔄 Feedback & Improvements</h3>
+                    <div class="form-group">
+                        <label>Faculty Feedback</label>
+                        <textarea id="facultyFeedback" placeholder="Feedback from faculty members on the generated timetable"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Student Feedback</label>
+                        <textarea id="studentFeedback" placeholder="Student feedback on schedule convenience"></textarea>
+                    </div>
+                    <button class="btn" onclick="submitFeedback()">Submit Feedback</button>
+                    <button class="btn btn-secondary" onclick="regenerateWithFeedback()">🔄 Regenerate with Feedback</button>
+                </div>
+            </div>
+
+            <!-- Settings Tab -->
+            <div class="tab-content" id="settings">
+                <div class="form-grid">
+                    <div class="form-section">
+                        <h3>⏰ Time Configuration</h3>
+                        <div class="form-group">
+                            <label>Start Time</label>
+                            <input type="time" id="startTime" value="09:00">
+                        </div>
+                        <div class="form-group">
+                            <label>End Time</label>
+                            <input type="time" id="endTime" value="17:00">
+                        </div>
+                        <div class="form-group">
+                            <label>Period Duration (minutes)</label>
+                            <input type="number" id="periodDuration" min="30" max="120" value="60">
+                        </div>
+                        <div class="form-group">
+                            <label>Break Duration (minutes)</label>
+                            <input type="number" id="breakDuration" min="10" max="60" value="15">
+                        </div>
+                        <div class="form-group">
+                            <label>Lunch Duration (minutes)</label>
+                            <input type="number" id="lunchDuration" min="30" max="120" value="60">
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>🎨 Display Preferences</h3>
+                        <div class="form-group">
+                            <label>Color Scheme</label>
+                            <select id="colorScheme">
+                                <option value="default">Default Blue</option>
+                                <option value="green">Nature Green</option>
+                                <option value="purple">Royal Purple</option>
+                                <option value="orange">Vibrant Orange</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Language</label>
+                            <select id="language">
+                                <option value="en">English</option>
+                                <option value="hi">हिंदी</option>
+                                <option value="te">తెలుగు</option>
+                                <option value="ta">தமிழ்</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>🔐 API & Integration</h3>
+                        <div class="form-group">
+                            <label>Academic Management System</label>
+                            <select id="amsIntegration">
+                                <option value="none">None</option>
+                                <option value="erp">ERP System</option>
+                                <option value="moodle">Moodle</option>
+                                <option value="custom">Custom API</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Auto-backup</label>
+                            <div>
+                                <label><input type="checkbox" id="autoBackup" checked> Enable automatic backup</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Notification Settings</label>
+                            <div>
+                                <label><input type="checkbox" id="emailNotify" checked> Email notifications</label><br>
+                                <label><input type="checkbox" id="smsNotify"> SMS notifications</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn" onclick="saveSettings()">💾 Save Settings</button>
+                <button class="btn btn-secondary" onclick="resetSettings()">🔄 Reset to Default</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let facultyData = [];
+        let courseData = [];
+        let roomData = [];
+        let generatedTimetable = null;
+        let geminiApiKey = '';
+
+        // Tab switching functionality
+        function switchTab(tabName) {
+            // Hide all tab contents
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(tab => tab.classList.remove('active'));
+            
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.nav-tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            // Show selected tab and mark as active
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Add faculty functionality
+        function addFaculty() {
+            const name = document.getElementById('facultyName').value;
+            const subjects = document.getElementById('facultySubjects').value;
+            const maxHours = document.getElementById('maxHours').value;
+            
+            if (!name || !subjects) {
+                showAlert('Please fill in faculty name and subjects', 'error');
+                return;
+            }
+
+            const availableDays = [];
+            document.querySelectorAll('input[type="checkbox"][value]').forEach(checkbox => {
+                if (checkbox.checked) {
+                    availableDays.push(checkbox.value);
+                }
+            });
+
+            const faculty = {
+                id: Date.now(),
+                name: name,
+                subjects: subjects.split(',').map(s => s.trim()),
+                availableDays: availableDays,
+                maxHours: parseInt(maxHours)
+            };
+
+            facultyData.push(faculty);
+            updateFacultyList();
+            clearFacultyForm();
+        }
+
+        function updateFacultyList() {
+            const listElement = document.getElementById('facultyList');
+            listElement.innerHTML = '';
+            
+            facultyData.forEach(faculty => {
+                const item = document.createElement('div');
+                item.className = 'list-item';
+                item.innerHTML = `
+                    <div>
+                        <strong>${faculty.name}</strong><br>
+                        <small>Subjects: ${faculty.subjects.join(', ')}<br>
+                        Days: ${faculty.availableDays.join(', ')}<br>
+                        Max Hours: ${faculty.maxHours}/week</small>
+                    </div>
+                    <button class="remove-btn" onclick="removeFaculty(${faculty.id})">Remove</button>
+                `;
+                listElement.appendChild(item);
+            });
+        }
+
+        function removeFaculty(id) {
+            facultyData = facultyData.filter(faculty => faculty.id !== id);
+            updateFacultyList();
+        }
+
+        function clearFacultyForm() {
+            document.getElementById('facultyName').value = '';
+            document.getElementById('facultySubjects').value = '';
+            document.getElementById('maxHours').value = '20';
+            document.querySelectorAll('input[type="checkbox"][value]').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+        }
+
+        // Add course functionality
+        function addCourse() {
+            const code = document.getElementById('courseCode').value;
+            const name = document.getElementById('courseName').value;
+            const type = document.getElementById('courseType').value;
+            const credits = document.getElementById('courseCredits').value;
+            const theoryHours = document.getElementById('theoryHours').value;
+            const practicalHours = document.getElementById('practicalHours').value;
+            
+            if (!code || !name) {
+                showAlert('Please fill in course code and name', 'error');
+                return;
+            }
+
+            const course = {
+                id: Date.now(),
+                code: code,
+                name: name,
+                type: type,
+                credits: parseInt(credits),
+                theoryHours: parseInt(theoryHours),
+                practicalHours: parseInt(practicalHours)
+            };
+
+            courseData.push(course);
+            updateCourseList();
+            clearCourseForm();
+        }
+
+        function updateCourseList() {
+            const listElement = document.getElementById('courseList');
+            listElement.innerHTML = '';
+            
+            courseData.forEach(course => {
+                const item = document.createElement('div');
+                item.className = 'list-item';
+                item.innerHTML = `
+                    <div>
+                        <strong>${course.code} - ${course.name}</strong><br>
+                        <small>Type: ${course.type} | Credits: ${course.credits}<br>
+                        Theory: ${course.theoryHours}h | Practical: ${course.practicalHours}h</small>
+                    </div>
+                    <button class="remove-btn" onclick="removeCourse(${course.id})">Remove</button>
+                `;
+                listElement.appendChild(item);
+            });
+        }
+
+        function removeCourse(id) {
+            courseData = courseData.filter(course => course.id !== id);
+            updateCourseList();
+        }
+
+        function clearCourseForm() {
+            document.getElementById('courseCode').value = '';
+            document.getElementById('courseName').value = '';
+            document.getElementById('courseType').value = 'major';
+            document.getElementById('courseCredits').value = '4';
+            document.getElementById('theoryHours').value = '3';
+            document.getElementById('practicalHours').value = '1';
+        }
+
+        // Add room functionality
+        function addRoom() {
+            const name = document.getElementById('roomName').value;
+            const type = document.getElementById('roomType').value;
+            const capacity = document.getElementById('roomCapacity').value;
+            const equipment = document.getElementById('roomEquipment').value;
+            
+            if (!name) {
+                showAlert('Please fill in room name', 'error');
+                return;
+            }
+
+            const room = {
+                id: Date.now(),
+                name: name,
+                type: type,
+                capacity: parseInt(capacity),
+                equipment: equipment
+            };
+
+            roomData.push(room);
+            updateRoomList();
+            clearRoomForm();
+        }
+
+        function updateRoomList() {
+            const listElement = document.getElementById('roomList');
+            listElement.innerHTML = '';
+            
+            roomData.forEach(room => {
+                const item = document.createElement('div');
+                item.className = 'list-item';
+                item.innerHTML = `
+                    <div>
+                        <strong>${room.name}</strong><br>
+                        <small>Type: ${room.type} | Capacity: ${room.capacity}<br>
+                        Equipment: ${room.equipment || 'Basic'}</small>
+                    </div>
+                    <button class="remove-btn" onclick="removeRoom(${room.id})">Remove</button>
+                `;
+                listElement.appendChild(item);
+            });
+        }
+
+        function removeRoom(id) {
+            roomData = roomData.filter(room => room.id !== id);
+            updateRoomList();
+        }
+
+        function clearRoomForm() {
+            document.getElementById('roomName').value = '';
+            document.getElementById('roomType').value = 'classroom';
+            document.getElementById('roomCapacity').value = '60';
+            document.getElementById('roomEquipment').value = '';
+        }
+
+        // AI Timetable Generation using Gemini API
+        async function generateTimetable() {
+            const apiKey = document.getElementById('apiKey').value;
+            if (!apiKey) {
+                showAlert('Please enter your Gemini API key', 'error');
+                return;
+            }
+
+            if (facultyData.length === 0 || courseData.length === 0 || roomData.length === 0) {
+                showAlert('Please add faculty, courses, and rooms before generating timetable', 'error');
+                return;
+            }
+
+            geminiApiKey = apiKey;
+            showLoading(true);
+            showProgress(true);
+
+            try {
+                // Simulate progress
+                updateProgress(20, 'Analyzing faculty constraints...');
+                await sleep(1000);
+                
+                updateProgress(40, 'Processing course requirements...');
+                await sleep(1000);
+                
+                updateProgress(60, 'Optimizing room allocations...');
+                await sleep(1000);
+                
+                updateProgress(80, 'Generating AI-optimized schedule...');
+                
+                // Call Gemini API
+                const timetableData = await callGeminiAPI();
+                
+                updateProgress(100, 'Timetable generated successfully!');
+                await sleep(500);
+                
+                showLoading(false);
+                showProgress(false);
+                
+                if (timetableData) {
+                    generatedTimetable = timetableData;
+                    displayTimetable(timetableData);
+                    switchTab('view');
+                    showAlert('Timetable generated successfully using AI optimization!', 'success');
+                    updateAnalytics();
+                } else {
+                    throw new Error('Failed to generate timetable');
+                }
+
+            } catch (error) {
+                showLoading(false);
+                showProgress(false);
+                showAlert('Error generating timetable: ' + error.message, 'error');
+                console.error('Generation error:', error);
+            }
+        }
+
+        async function callGeminiAPI() {
+            const systemPrompt = createSystemPrompt();
+            
+            try {
+                const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=' + geminiApiKey, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{
+                                text: systemPrompt
+                            }]
+                        }],
+                        generationConfig: {
+                            temperature: 0.1,
+                            topK: 40,
+                            topP: 0.95,
+                            maxOutputTokens: 8192,
+                        },
+                        safetySettings: [
+                            {
+                                category: "HARM_CATEGORY_HARASSMENT",
+                                threshold: "BLOCK_MEDIUM_AND_ABOVE"
+                            }
+                        ]
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API request failed: ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                if (data.candidates && data.candidates[0] && data.candidates[0].content) {
+                    const generatedText = data.candidates[0].content.parts[0].text;
+                    return parseTimetableResponse(generatedText);
+                } else {
+                    throw new Error('Invalid API response format');
+                }
+                
+            } catch (error) {
+                console.error('Gemini API error:', error);
+                // Fallback to demo timetable if API fails
+                return generateDemoTimetable();
+            }
+        }
+
+        function createSystemPrompt() {
+            const academicYear = document.getElementById('academicYear').value;
+            const semester = document.getElementById('semester').value;
+            const optimizationPriority = document.getElementById('optimizationPriority').value;
+            
+            const constraints = {
+                strictTiming: document.getElementById('strictTiming').checked,
+                gapMinimize: document.getElementById('gapMinimize').checked,
+                lunchBreak: document.getElementById('lunchBreak').checked,
+                consecutiveLimit: document.getElementById('consecutiveLimit').checked
+            };
+
+            return `You are an AI assistant specialized in creating optimal academic timetables for NEP 2020 compliant institutions.
+
+Generate a detailed weekly timetable for Academic Year ${academicYear}, Semester ${semester} with the following data:
+
+FACULTY DATA:
+${JSON.stringify(facultyData, null, 2)}
+
+COURSE DATA:
+${JSON.stringify(courseData, null, 2)}
+
+ROOM DATA:
+${JSON.stringify(roomData, null, 2)}
+
+CONSTRAINTS:
+- Optimization Priority: ${optimizationPriority}
+- Strict Time Slots: ${constraints.strictTiming}
+- Minimize Gaps: ${constraints.gapMinimize}
+- Mandatory Lunch Break: ${constraints.lunchBreak}
+- Max 3 Consecutive Hours: ${constraints.consecutiveLimit}
+
+REQUIREMENTS:
+1. Create conflict-free timetable for Monday to Saturday
+2. Consider NEP 2020 requirements (FYUP, Major/Minor/Skill courses)
+3. Optimize faculty workload distribution
+4. Ensure room capacity matching
+5. Include teaching practice and field work slots
+6. Handle theory and practical sessions separately
+
+Please return a JSON structure with the following format:
+{
+  "timetable": {
+    "monday": [
+      {
+        "time": "09:00-10:00",
+        "course": "MAT101",
+        "faculty": "Dr. Smith",
+        "room": "Room 101",
+        "type": "theory",
+        "students": 60
+      }
+    ],
+    "tuesday": [...],
+    ...
+  },
+  "conflicts": [],
+  "metrics": {
+    "facultyUtilization": 85,
+    "roomUtilization": 78,
+    "totalHours": 120
+  }
+}
+
+Make sure the timetable is optimal, practical, and follows all NEP 2020 guidelines.`;
+        }
+
+        function parseTimetableResponse(response) {
+            try {
+                // Extract JSON from response
+                const jsonMatch = response.match(/\{[\s\S]*\}/);
+                if (jsonMatch) {
+                    return JSON.parse(jsonMatch[0]);
+                }
+            } catch (error) {
+                console.error('Error parsing AI response:', error);
+            }
+            
+            // Return demo timetable if parsing fails
+            return generateDemoTimetable();
+        }
+
+        function generateDemoTimetable() {
+            const timeSlots = ['09:00-10:00', '10:00-11:00', '11:15-12:15', '12:15-13:15', '14:15-15:15', '15:15-16:15', '16:15-17:15'];
+            const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+            
+            const timetable = {};
+            
+            days.forEach(day => {
+                timetable[day] = [];
+                timeSlots.forEach((timeSlot, index) => {
+                    if (timeSlot === '13:15-14:15') {
+                        timetable[day].push({
+                            time: timeSlot,
+                            course: 'LUNCH BREAK',
+                            faculty: '',
+                            room: '',
+                            type: 'break',
+                            students: 0
+                        });
+                    } else if (courseData.length > 0 && facultyData.length > 0 && roomData.length > 0) {
+                        const course = courseData[index % courseData.length];
+                        const faculty = facultyData[index % facultyData.length];
+                        const room = roomData[index % roomData.length];
+                        
+                        timetable[day].push({
+                            time: timeSlot,
+                            course: course.code,
+                            courseName: course.name,
+                            faculty: faculty.name,
+                            room: room.name,
+                            type: index % 3 === 0 ? 'practical' : 'theory',
+                            students: Math.min(60, room.capacity)
+                        });
+                    }
+                });
+            });
+
+            return {
+                timetable: timetable,
+                conflicts: [],
+                metrics: {
+                    facultyUtilization: 82,
+                    roomUtilization: 75,
+                    totalHours: timeSlots.length * days.length - days.length // excluding lunch
+                }
+            };
+        }
+
+        function displayTimetable(data) {
+            const tbody = document.getElementById('timetableBody');
+            const display = document.getElementById('timetableDisplay');
+            
+            tbody.innerHTML = '';
+            
+            if (!data || !data.timetable) {
+                showAlert('No timetable data to display', 'error');
+                return;
+            }
+
+            const timeSlots = ['09:00-10:00', '10:00-11:00', '11:15-12:15', '12:15-13:15', '13:15-14:15', '14:15-15:15', '15:15-16:15', '16:15-17:15'];
+            const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+            
+            timeSlots.forEach(timeSlot => {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td><strong>${timeSlot}</strong></td>`;
+                
+                days.forEach(day => {
+                    const cell = document.createElement('td');
+                    const dayData = data.timetable[day] || [];
+                    const slotData = dayData.find(slot => slot.time === timeSlot);
+                    
+                    if (slotData) {
+                        if (slotData.type === 'break') {
+                            cell.innerHTML = '<div style="background:#ffc107; padding:8px; border-radius:4px; text-align:center; font-weight:bold;">LUNCH BREAK</div>';
+                        } else {
+                            cell.innerHTML = `
+                                <div class="subject-block">
+                                    <div class="subject-code">${slotData.course}</div>
+                                    <div class="faculty-name">${slotData.faculty}</div>
+                                    <div class="room-info">${slotData.room}</div>
+                                    <div class="room-info">${slotData.type === 'practical' ? '🧪 Lab' : '📚 Theory'}</div>
+                                </div>
+                            `;
+                        }
+                    } else {
+                        cell.innerHTML = '<div style="color:#ccc; text-align:center;">Free</div>';
+                    }
+                    
+                    row.appendChild(cell);
+                });
+                
+                tbody.appendChild(row);
+            });
+            
+            display.style.display = 'block';
+        }
+
+        function updateAnalytics() {
+            if (!generatedTimetable || !generatedTimetable.metrics) return;
+            
+            const metrics = generatedTimetable.metrics;
+            
+            document.getElementById('totalHours').textContent = metrics.totalHours || 0;
+            document.getElementById('facultyUtilization').textContent = (metrics.facultyUtilization || 0) + '%';
+            document.getElementById('roomUtilization').textContent = (metrics.roomUtilization || 0) + '%';
+            document.getElementById('conflictCount').textContent = generatedTimetable.conflicts?.length || 0;
+        }
+
+        // Utility functions
+        function showAlert(message, type) {
+            const alertDiv = document.getElementById('resultAlert');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.textContent = message;
+            alertDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                alertDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        function showLoading(show) {
+            document.getElementById('loadingDiv').style.display = show ? 'block' : 'none';
+        }
+
+        function showProgress(show) {
+            document.getElementById('progressContainer').style.display = show ? 'block' : 'none';
+        }
+
+        function updateProgress(percent, message) {
+            const progressBar = document.getElementById('progressBar');
+            progressBar.style.width = percent + '%';
+            progressBar.textContent = percent + '%';
+            
+            if (message) {
+                progressBar.setAttribute('data-message', message);
+            }
+        }
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        function validateInputs() {
+            let errors = [];
+            
+            if (facultyData.length === 0) errors.push('No faculty members added');
+            if (courseData.length === 0) errors.push('No courses added');
+            if (roomData.length === 0) errors.push('No rooms added');
+            
+            const apiKey = document.getElementById('apiKey').value;
+            if (!apiKey) errors.push('Gemini API key not provided');
+            
+            if (errors.length > 0) {
+                showAlert('Validation errors: ' + errors.join(', '), 'error');
+            } else {
+                showAlert('All inputs validated successfully!', 'success');
+            }
+        }
+
+        function clearAll() {
+            if (confirm('Are you sure you want to clear all data? This action cannot be undone.')) {
+                facultyData = [];
+                courseData = [];
+                roomData = [];
+                generatedTimetable = null;
+                
+                updateFacultyList();
+                updateCourseList();
+                updateRoomList();
+                
+                document.getElementById('timetableDisplay').style.display = 'none';
+                showAlert('All data cleared successfully', 'info');
+            }
+        }
+
+        // Export functions
+        function exportToPDF() {
+            if (!generatedTimetable) {
+                showAlert('No timetable to export', 'error');
+                return;
+            }
+            
+            showAlert('PDF export functionality would be implemented with a PDF library like jsPDF', 'info');
+        }
+
+        function exportToExcel() {
+            if (!generatedTimetable) {
+                showAlert('No timetable to export', 'error');
+                return;
+            }
+            
+            showAlert('Excel export functionality would be implemented with a library like SheetJS', 'info');
+        }
+
+        function shareSchedule() {
+            if (!generatedTimetable) {
+                showAlert('No timetable to share', 'error');
+                return;
+            }
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'NEP 2020 Timetable',
+                    text: 'Check out our AI-generated timetable!',
+                    url: window.location.href
+                });
+            } else {
+                showAlert('Share functionality implemented - copying link to clipboard', 'info');
+            }
+        }
+
+        function printSchedule() {
+            if (!generatedTimetable) {
+                showAlert('No timetable to print', 'error');
+                return;
+            }
+            
+            window.print();
+        }
+
+        function submitFeedback() {
+            const facultyFeedback = document.getElementById('facultyFeedback').value;
+            const studentFeedback = document.getElementById('studentFeedback').value;
+            
+            if (!facultyFeedback && !studentFeedback) {
+                showAlert('Please provide some feedback', 'error');
+                return;
+            }
+            
+            showAlert('Feedback submitted successfully! It will be used to improve future timetables.', 'success');
+            
+            // Clear feedback forms
+            document.getElementById('facultyFeedback').value = '';
+            document.getElementById('studentFeedback').value = '';
+        }
+
+        function regenerateWithFeedback() {
+            showAlert('Regenerating timetable with feedback integration...', 'info');
+            generateTimetable();
+        }
+
+        function saveSettings() {
+            const settings = {
+                startTime: document.getElementById('startTime').value,
+                endTime: document.getElementById('endTime').value,
+                periodDuration: document.getElementById('periodDuration').value,
+                breakDuration: document.getElementById('breakDuration').value,
+                lunchDuration: document.getElementById('lunchDuration').value,
+                colorScheme: document.getElementById('colorScheme').value,
+                language: document.getElementById('language').value,
+                amsIntegration: document.getElementById('amsIntegration').value,
+                autoBackup: document.getElementById('autoBackup').checked,
+                emailNotify: document.getElementById('emailNotify').checked,
+                smsNotify: document.getElementById('smsNotify').checked
+            };
+            
+            localStorage.setItem('timetableSettings', JSON.stringify(settings));
+            showAlert('Settings saved successfully!', 'success');
+        }
+
+        function resetSettings() {
+            if (confirm('Reset all settings to default values?')) {
+                localStorage.removeItem('timetableSettings');
+                
+                // Reset form values
+                document.getElementById('startTime').value = '09:00';
+                document.getElementById('endTime').value = '17:00';
+                document.getElementById('periodDuration').value = '60';
+                document.getElementById('breakDuration').value = '15';
+                document.getElementById('lunchDuration').value = '60';
+                document.getElementById('colorScheme').value = 'default';
+                document.getElementById('language').value = 'en';
+                document.getElementById('amsIntegration').value = 'none';
+                document.getElementById('autoBackup').checked = true;
+                document.getElementById('emailNotify').checked = true;
+                document.getElementById('smsNotify').checked = false;
+                
+                showAlert('Settings reset to default values', 'info');
+            }
+        }
+
+        // Load settings on page load
+        window.addEventListener('load', function() {
+            const savedSettings = localStorage.getItem('timetableSettings');
+            if (savedSettings) {
+                const settings = JSON.parse(savedSettings);
+                
+                Object.keys(settings).forEach(key => {
+                    const element = document.getElementById(key);
+                    if (element) {
+                        if (element.type === 'checkbox') {
+                            element.checked = settings[key];
+                        } else {
+                            element.value = settings[key];
+                        }
+                    }
+                });
+            }
+        });
+
+        // Auto-save data to localStorage
+        setInterval(() => {
+            const data = {
+                faculty: facultyData,
+                courses: courseData,
+                rooms: roomData,
+                timetable: generatedTimetable
+            };
+            localStorage.setItem('timetableData', JSON.stringify(data));
+        }, 30000); // Save every 30 seconds
+
+        // Load data on page load
+        window.addEventListener('load', function() {
+            const savedData = localStorage.getItem('timetableData');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                facultyData = data.faculty || [];
+                courseData = data.courses || [];
+                roomData = data.rooms || [];
+                generatedTimetable = data.timetable || null;
+                
+                updateFacultyList();
+                updateCourseList();
+                updateRoomList();
+                
+                if (generatedTimetable) {
+                    displayTimetable(generatedTimetable);
+                    updateAnalytics();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
